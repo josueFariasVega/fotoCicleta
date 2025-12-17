@@ -192,7 +192,7 @@ const Hero = () => {
           transition={{ delay: 1.2 }}
           className="font-mono text-sm text-text-gray max-w-md mx-auto mt-8 border-t border-white/10 pt-4"
         >
-          No operamos por piezas sueltas. Operamos por sistemas.
+          Dirección creativa y producción visual integral
         </motion.div>
       </div>
 
@@ -514,85 +514,230 @@ const GalleryItem = ({
   );
 };
 
-const PremiumGallery = () => {
-  const categories = ["TODO", "FOTOGRAFÍA", "AUDIOVISUAL", "DOCUMENTAL"];
+const VideoModal = ({
+  isOpen,
+  onClose,
+  videoUrl,
+  title,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  videoUrl: string;
+  title: string;
+}) => {
+  if (!isOpen) return null;
 
   return (
-    <Section id="galeria" className="bg-black/30">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-white/5 pb-8">
-        <div>
-          <h3 className="text-sm font-mono text-text-gray mb-2">PRODUCCIONES RECIENTES</h3>
-          <h2 className="text-3xl md:text-5xl font-bold text-white">Galería Visual</h2>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="relative w-full max-w-5xl bg-neutral-900 rounded-lg overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-brand-red transition-colors text-white"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Video Title */}
+          <div className="absolute top-4 left-4 z-10 bg-black/70 px-4 py-2 rounded">
+            <p className="text-white font-mono text-sm">{title}</p>
+          </div>
+
+          {/* Video Player - Using iframe for YouTube/Vimeo embeds */}
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={videoUrl}
+              className="absolute inset-0 w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const PremiumGallery = () => {
+  const [activeCategory, setActiveCategory] = React.useState("TODO");
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [currentVideo, setCurrentVideo] = React.useState({ url: "", title: "" });
+
+  const categories = ["TODO", "FOTOGRAFÍA", "AUDIOVISUAL", "DOCUMENTAL"];
+
+  const openVideoModal = (url: string, title: string) => {
+    setCurrentVideo({ url, title });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setCurrentVideo({ url: "", title: "" }), 300);
+  };
+
+  // Gallery items with proper categories
+  const allItems = [
+    {
+      size: "large" as const,
+      type: "video" as const,
+      category: "AUDIOVISUAL",
+      title: "URBAN MOVEMENT 24",
+      image: "https://images.unsplash.com/photo-1534068590799-09895a701e3e?q=80&w=2000&auto=format&fit=crop",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+    },
+    {
+      size: "tall" as const,
+      type: "photo" as const,
+      category: "FOTOGRAFÍA",
+      title: "SILENT ARCHITECTURE",
+      image: "https://images.unsplash.com/photo-1486716985456-630ee40902f3?q=80&w=2000&auto=format&fit=crop",
+    },
+    {
+      size: "normal" as const,
+      type: "photo" as const,
+      category: "FOTOGRAFÍA",
+      title: "NEON ESSENCE",
+      image: "https://images.unsplash.com/photo-1550257018-c2909e334ae8?q=80&w=1000&auto=format&fit=crop",
+    },
+    {
+      size: "normal" as const,
+      type: "video" as const,
+      category: "AUDIOVISUAL",
+      title: "TECH SYSTEMS",
+      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+    },
+    {
+      size: "wide" as const,
+      type: "video" as const,
+      category: "DOCUMENTAL",
+      title: "ROOTS OF CULTURE",
+      image: "https://images.unsplash.com/photo-1533575770077-052fa2c609fc?q=80&w=2000&auto=format&fit=crop",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+    },
+    {
+      size: "large" as const,
+      type: "photo" as const,
+      category: "FOTOGRAFÍA",
+      title: "HUMAN CANVAS",
+      image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=2000&auto=format&fit=crop",
+    },
+  ];
+
+  // Filter items based on active category
+  const filteredItems = activeCategory === "TODO"
+    ? allItems
+    : allItems.filter(item => item.category === activeCategory);
+
+  return (
+    <>
+      <Section id="galeria" className="bg-black/30">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-white/5 pb-8">
+          <div>
+            <h3 className="text-sm font-mono text-text-gray mb-2">PRODUCCIONES RECIENTES</h3>
+            <h2 className="text-3xl md:text-5xl font-bold text-white">Galería Visual</h2>
+          </div>
+
+          <div className="flex gap-4 md:gap-8 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`text-sm font-mono tracking-wider hover:text-brand-red transition-colors whitespace-nowrap ${activeCategory === cat ? "text-brand-red" : "text-text-gray"
+                  }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex gap-4 md:gap-8 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
-          {categories.map((cat, idx) => (
-            <button key={idx} className={`text-sm font-mono tracking-wider hover:text-brand-red transition-colors whitespace-nowrap ${idx === 0 ? "text-brand-red" : "text-text-gray"}`}>
-              {cat}
-            </button>
-          ))}
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-max"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, idx) => (
+              <motion.div
+                key={`${item.title}-${idx}`}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.4 }}
+                whileHover={{ scale: 0.98 }}
+                className={`relative group overflow-hidden bg-neutral-900 cursor-pointer ${item.size === "large" ? "md:col-span-2 md:row-span-2 min-h-[400px]" :
+                    item.size === "tall" ? "md:col-span-1 md:row-span-2 min-h-[400px]" :
+                      item.size === "wide" ? "md:col-span-2 md:row-span-1 min-h-[200px]" :
+                        "md:col-span-1 md:row-span-1 min-h-[200px]"
+                  }`}
+                onClick={() => {
+                  if (item.type === "video" && item.videoUrl) {
+                    openVideoModal(item.videoUrl, item.title);
+                  }
+                }}
+              >
+                {/* Background Image */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
+
+                {/* Overlay Gradient */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60" />
+
+                {/* Content */}
+                <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                  <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="text-brand-red text-xs font-mono uppercase tracking-wider mb-2 block">
+                      {item.type === "video" && <Play className="inline w-3 h-3 mr-1 mb-0.5" />}
+                      {item.category}
+                    </span>
+                    <h3 className="text-white text-xl md:text-2xl font-bold leading-none">{item.title}</h3>
+                  </div>
+                </div>
+
+                {/* Play Button Overlay for Video */}
+                {item.type === "video" && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-16 h-16 rounded-full bg-brand-red/80 backdrop-blur-sm flex items-center justify-center text-white">
+                      <Play className="w-6 h-6 ml-1 fill-white" />
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="mt-12 text-center">
+          <Link href="/portfolio" className="inline-flex items-center gap-2 text-white border-b border-brand-red pb-1 hover:text-brand-red transition-colors">
+            VER PORTFOLIO COMPLETO <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
-      </div>
+      </Section>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-max">
-        {/* Main Highlight (Video) */}
-        <GalleryItem
-          size="large"
-          type="video"
-          category="Campaña Publicitaria"
-          title="URBAN MOVEMENT 24"
-          image="https://images.unsplash.com/photo-1534068590799-09895a701e3e?q=80&w=2000&auto=format&fit=crop"
-        />
-
-        {/* Tall Highlight (Photo) */}
-        <GalleryItem
-          size="tall"
-          type="photo"
-          category="Editorial"
-          title="SILENT ARCHITECTURE"
-          image="https://images.unsplash.com/photo-1486716985456-630ee40902f3?q=80&w=2000&auto=format&fit=crop"
-        />
-
-        {/* Standard Items */}
-        <GalleryItem
-          size="normal"
-          type="photo"
-          category="Fotografía Producto"
-          title="NEON ESSENCE"
-          image="https://images.unsplash.com/photo-1550257018-c2909e334ae8?q=80&w=1000&auto=format&fit=crop"
-        />
-        <GalleryItem
-          size="normal"
-          type="video"
-          category="Reel Corporativo"
-          title="TECH SYSTEMS"
-          image="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop"
-        />
-
-        {/* Wide Item */}
-        <GalleryItem
-          size="wide"
-          type="video"
-          category="Documental"
-          title="ROOTS OF CULTURE"
-          image="https://images.unsplash.com/photo-1533575770077-052fa2c609fc?q=80&w=2000&auto=format&fit=crop"
-        />
-
-        <GalleryItem
-          size="large"
-          type="photo"
-          category="Retrato Artístico"
-          title="HUMAN CANVAS"
-          image="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=2000&auto=format&fit=crop"
-        />
-      </div>
-
-      <div className="mt-12 text-center">
-        <Link href="/portfolio" className="inline-flex items-center gap-2 text-white border-b border-brand-red pb-1 hover:text-brand-red transition-colors">
-          VER PORTFOLIO COMPLETO <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    </Section>
+      <VideoModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        videoUrl={currentVideo.url}
+        title={currentVideo.title}
+      />
+    </>
   );
 };
 
