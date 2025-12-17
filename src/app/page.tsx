@@ -19,12 +19,47 @@ import {
   Plus,
   Minus,
   Menu,
+  Film,
+  Video,
+  Mic,
+  Aperture,
+  SlidersHorizontal,
+  Grid3x3,
+  Clock,
+  Disc,
+  Monitor,
+  Settings,
+  Maximize,
+  Battery,
+  Focus,
+  Cpu,
+  Zap,
+  Scan,
+  Database
 } from "lucide-react";
+import {
+  FilmGrain,
+  Vignette,
+  FilmFrame,
+  MonitorFrame,
+  PolaroidFrame,
+  ProductionBadge,
+  CinematicIcon
+} from "@/components/VisualEffects";
 
 // --- Components ---
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const scrollToSection = (id: string) => {
     setIsMenuOpen(false);
@@ -37,50 +72,66 @@ const Navbar = () => {
   };
 
   const links = [
-    { label: "01 Qué Hacemos", id: "que-hacemos" },
-    { label: "02 Galería", id: "galeria" },
-    { label: "03 Proceso", id: "como-trabajamos" },
-    { label: "04 Sistemas", id: "sistemas" },
-    { label: "05 Diferencial", id: "diferencial" },
+    { label: "Qué Hacemos", id: "que-hacemos" },
+    { label: "Galería", id: "galeria" },
+    { label: "Proceso", id: "como-trabajamos" },
+    { label: "Sistemas", id: "sistemas" },
+    { label: "Diferencial", id: "diferencial" },
   ];
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-neutral-900/80 border-b border-white/5">
-        <div className="font-bold text-xl tracking-tight text-white cursor-pointer z-50" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          FOTOCICLETA
-        </div>
+      <FilmGrain />
+      <Vignette />
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-8">
-          {links.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => scrollToSection(link.id)}
-              className="text-xs font-mono text-text-gray hover:text-brand-red transition-colors uppercase tracking-wider"
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="hidden md:block">
-          <a
-            href="mailto:hola@fotocicleta.com"
-            className="px-6 py-2 text-sm font-medium text-white border border-white/20 hover:bg-brand-red hover:border-brand-red transition-colors duration-300 rounded-full"
-          >
-            Hablemos
-          </a>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button
-          className="md:hidden text-white z-50 p-2"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 pointer-events-none">
+        <motion.nav
+          initial={{ width: "70%", y: 0 }}
+          animate={{
+            width: isScrolled ? "65%" : "70%",
+            y: isScrolled ? 0 : 0, // Keep it at same top offset or adjust if needed
+            padding: isScrolled ? "0.75rem 1.5rem" : "1rem 2rem",
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="pointer-events-auto flex items-center justify-between backdrop-blur-xl bg-neutral-900/60 border border-white/10 shadow-2xl rounded-full"
         >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </nav>
+          <div className="font-bold text-lg tracking-tight text-white cursor-pointer z-50 flex items-center gap-2" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            FOTOCICLETA <span className="text-brand-red text-[10px] bg-white/10 px-1.5 py-0.5 rounded border border-white/5 hidden md:inline-block">PRO</span>
+          </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex gap-6">
+            {links.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className="text-[11px] font-mono text-text-gray hover:text-white transition-colors uppercase tracking-wider relative group"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-brand-red group-hover:w-full transition-all duration-300" />
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden md:flex items-center gap-4">
+            <a
+              href="mailto:hola@fotocicleta.com"
+              className={`text-xs font-bold text-white bg-brand-red hover:bg-red-700 transition-all duration-300 rounded-full flex items-center gap-2 ${isScrolled ? 'px-4 py-2' : 'px-6 py-2.5'}`}
+            >
+              <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+              CONTACTO
+            </a>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            className="md:hidden text-white z-50 p-1"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </motion.nav>
+      </div>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -90,7 +141,7 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-neutral-950 flex flex-col items-center justify-center gap-8 md:hidden"
+            className="fixed inset-0 z-40 bg-neutral-950/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden"
           >
             {links.map((link, idx) => (
               <motion.button
@@ -111,6 +162,13 @@ const Navbar = () => {
             >
               Hablemos
             </a>
+
+            <button
+              className="absolute top-8 right-8 p-2 text-white/50 hover:text-white"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <X className="w-8 h-8" />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -139,6 +197,10 @@ const Section = ({
       className={`${noPadding ? "py-0" : "py-24"
         } px-6 md:px-12 max-w-7xl mx-auto ${className}`}
     >
+      {/* Decorative Guide Lines */}
+      <div className="absolute left-6 top-0 bottom-0 w-[1px] bg-white/5 hidden md:block" />
+      <div className="absolute right-6 top-0 bottom-0 w-[1px] bg-white/5 hidden md:block" />
+
       {children}
     </motion.section>
   );
@@ -146,63 +208,72 @@ const Section = ({
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
-      <div className="space-y-6 z-10">
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ staggerChildren: 0.1, delayChildren: 0.3 }}
-          className="text-6xl md:text-9xl font-black tracking-tighter text-white leading-none"
-        >
-          {"FOTOCICLETA".split("").map((char, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </motion.h1>
+    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
+      {/* Cinematic Background Elements */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-neutral-950/80 to-neutral-950 -z-10" />
 
+      <div className="space-y-8 z-10 max-w-4xl relative">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
-          className="flex flex-col md:flex-row gap-4 justify-center items-center mt-8"
+          transition={{ delay: 0.5 }}
+          className="absolute -top-20 left-1/2 -translate-x-1/2 flex gap-4 opacity-30 select-none"
         >
+          <ProductionBadge type="RAW" />
+          <ProductionBadge type="4K" />
+          <ProductionBadge type="FPS" />
+        </motion.div>
+
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="text-brand-red font-mono text-sm tracking-[0.3em] uppercase mb-4 flex items-center justify-center gap-4">
+            <span className="w-12 h-px bg-brand-red/50" />
+            Estudio Creativo
+            <span className="w-12 h-px bg-brand-red/50" />
+          </h2>
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter text-white mb-6 leading-none">
+            VISUAL <br />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">STORYTELLING</span>
+          </h1>
+        </motion.div>
+
+        <p className="text-text-gray text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+          Transformamos conceptos en experiencias visuales de alto impacto.
+          <span className="block mt-2 text-white/60 text-sm font-mono">FOTOGRAFÍA • VIDEO • DIRECCIÓN DE ARTE</span>
+        </p>
+
+        <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-8">
           <button
             onClick={() => document.getElementById('galeria')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-neutral-200 transition-colors uppercase tracking-wider text-sm"
+            className="group relative px-8 py-4 bg-brand-red text-white font-bold tracking-wider overflow-hidden rounded-sm"
           >
-            Ver Galería
+            <span className="relative z-10 flex items-center gap-2">
+              VER GALERÍA <Play className="w-4 h-4 fill-current" />
+            </span>
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </button>
           <button
-            onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-8 py-3 bg-brand-red text-white font-bold rounded-full hover:bg-brand-red-hover transition-colors uppercase tracking-wider text-sm"
+            onClick={() => document.getElementById('que-hacemos')?.scrollIntoView({ behavior: 'smooth' })}
+            className="px-8 py-4 border border-white/20 text-white font-mono tracking-wider hover:bg-white/5 transition-colors rounded-sm flex items-center gap-2"
           >
-            Contacto
+            <Grid3x3 className="w-4 h-4" />
+            SERVICIOS
           </button>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="font-mono text-sm text-text-gray max-w-md mx-auto mt-8 border-t border-white/10 pt-4"
-        >
-          Dirección creativa y producción visual integral
-        </motion.div>
+        </div>
       </div>
 
+      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-xs text-text-gray/50"
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        SCROLL DOWN
+        <span className="text-[10px] font-mono text-white/30 tracking-widest">SCROLL</span>
+        <div className="w-px h-12 bg-linear-to-b from-brand-red to-transparent" />
       </motion.div>
     </section>
   );
@@ -210,40 +281,65 @@ const Hero = () => {
 
 const Manifiesto = () => {
   return (
-    <Section className="min-h-[50vh] flex items-center justify-center">
-      <div className="max-w-4xl text-center md:text-left space-y-8">
-        <h2 className="text-3xl md:text-5xl font-light leading-tight text-white">
-          <span className="font-bold">FOTOCICLETA</span> es una productora
-          visual de dirección creativa y producción integral que diseña y
-          ejecuta sistemas de contenido, campañas publicitarias y proyectos
-          narrativos para marcas y organizaciones.
-        </h2>
-        <div className="text-xl md:text-2xl text-text-gray leading-relaxed space-y-4">
-          <p>
-            <span className="text-brand-red">
-              Trabajamos con criterio, estructura y responsabilidad real de
-              producción.
-            </span>
-          </p>
-          <p className="font-mono text-lg text-white">
-            No operamos por piezas sueltas. <br />
-            Operamos por sistemas.
-          </p>
+    <Section className="min-h-[70vh] flex items-center justify-center relative overflow-hidden bg-black text-white py-24">
+      {/* Film Strip Border Top */}
+      <div className="absolute top-0 left-0 right-0 h-12 md:h-16 bg-neutral-900 flex items-center justify-between px-2 z-20 border-b border-white/10">
+        {Array.from({ length: 40 }).map((_, i) => (
+          <div key={`top-${i}`} className="w-3 md:w-6 h-8 md:h-10 bg-black rounded-sm shrink-0 mx-1 md:mx-4" />
+        ))}
+      </div>
+
+      {/* Ambient Lighting */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-red/5 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="max-w-4xl w-full relative z-10 p-8 md:p-12">
+        {/* Scene Heading */}
+        <div className="font-mono text-sm tracking-[0.2em] text-white/40 mb-12 flex items-center gap-4">
+          <span className="w-12 h-px bg-white/20" />
+          INT. CREATIVE STUDIO - DAY
         </div>
+
+        <div className="space-y-12">
+          <h2 className="text-4xl md:text-7xl font-sans font-bold leading-[0.9] tracking-tighter uppercase text-transparent bg-clip-text bg-linear-to-b from-white to-white/50">
+            <span className="block text-xl md:text-3xl tracking-widest font-light text-white mb-2">FOTOCICLETA</span>
+            Productora Visual<br />
+            <span className="text-white">Integral</span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+            <div className="md:col-span-8">
+              <p className="text-xl md:text-2xl font-light text-text-gray leading-relaxed">
+                Diseñamos y ejecutamos sistemas de contenido, campañas publicitarias y proyectos narrativos con
+                <span className="text-white font-medium"> precision absoluta</span>.
+              </p>
+            </div>
+
+            <div className="md:col-span-4">
+              {/* System Badge */}
+              <div className="border border-white/20 p-1 inline-block rotate-[-5deg] hover:rotate-0 transition-transform duration-500 origin-center cursor-default">
+                <div className="border border-white/20 p-4 bg-brand-red/10 backdrop-blur-sm">
+                  <p className="font-mono text-[10px] text-brand-red tracking-widest text-center mb-1">SYSTEM CHECK</p>
+                  <p className="font-bold text-lg text-white leading-none text-center">
+                    OPERAMOS<br />POR<br />SISTEMAS
+                  </p>
+                  <p className="font-mono text-[10px] text-white/40 tracking-widest text-center mt-1">EST. 2024</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Film Strip Border Bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-12 md:h-16 bg-neutral-900 flex items-center justify-between px-2 z-20 border-t border-white/10">
+        {Array.from({ length: 40 }).map((_, i) => (
+          <div key={`bottom-${i}`} className="w-3 md:w-6 h-8 md:h-10 bg-black rounded-sm shrink-0 mx-1 md:mx-4" />
+        ))}
       </div>
     </Section>
   );
 };
 
 const QueHacemos = () => {
-  const items = [
-    { label: "Fotografía", icon: Camera },
-    { label: "Audiovisual", icon: Clapperboard },
-    { label: "Narrativa", icon: Layers },
-    { label: "Producción publicitaria", icon: MonitorPlay },
-    { label: "Edición centralizada", icon: Share2 },
-  ];
-
   return (
     <Section id="que-hacemos">
       <div className="border-t border-border-dark pt-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -258,26 +354,67 @@ const QueHacemos = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border-dark border border-border-dark">
-        {items.map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-white/5 p-8 min-h-[200px] flex flex-col justify-between hover:bg-white/10 transition-colors"
-          >
-            <item.icon className="w-8 h-8 text-white mb-4" />
-            <span className="text-xl text-text-gray font-medium">
-              {item.label}
-            </span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 mt-16">
+        {/* Fotografía - Polaroid Style */}
+        <PolaroidFrame caption="FOTOGRAFÍA">
+          <div className="h-64 bg-neutral-900 relative group overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 bg-black/80 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform duration-300">
+                <Camera className="w-8 h-8 text-white" />
+              </div>
+            </div>
           </div>
-        ))}
-        <div className="bg-white/5 p-8 min-h-[200px] flex items-center justify-center text-center">
-          <div className="space-y-2">
-            <p className="font-mono text-brand-red text-sm">
-              "Cada proyecto tiene un alcance definido."
+        </PolaroidFrame>
+
+        {/* Audiovisual - Monitor Style */}
+        <div className="lg:mt-12">
+          <MonitorFrame label="REC">
+            <div className="h-64 bg-neutral-900 relative group overflow-hidden">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 bg-brand-red/90 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] group-hover:animate-pulse">
+                  <Clapperboard className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
+          </MonitorFrame>
+          <div className="text-center mt-4">
+            <h4 className="text-white font-bold text-xl uppercase tracking-wider">Audiovisual</h4>
+            <p className="text-sm text-text-gray font-mono">Producción & Dirección</p>
+          </div>
+        </div>
+
+        {/* Narrativa - Film Style */}
+        <FilmFrame className="border-none bg-transparent p-0">
+          <div className="bg-neutral-900 border-x-8 border-black p-8 h-full min-h-[300px] flex flex-col items-center justify-center relative group">
+            <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(90deg,transparent,transparent_49px,#ffffff05_50px)]" />
+            <Layers className="w-12 h-12 text-text-gray group-hover:text-white transition-colors mb-6" />
+            <h4 className="text-2xl font-bold text-white mb-2">NARRATIVA</h4>
+            <p className="text-center text-text-gray text-sm leading-relaxed px-4">
+              Desarrollo de guion, estructura y storytelling estratégico.
             </p>
-            <p className="font-mono text-white text-sm">
-              "Cada entrega tiene un porqué."
-            </p>
+            <div className="mt-6 flex gap-2">
+              <ProductionBadge type="RAW" />
+              <ProductionBadge type="HDR" />
+            </div>
+          </div>
+        </FilmFrame>
+      </div>
+
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white/5 p-6 rounded border border-white/5 flex items-center gap-4 hover:border-brand-red/50 transition-colors">
+          <CinematicIcon icon={MonitorPlay} glow />
+          <div>
+            <h5 className="text-white font-bold">Producción Publicitaria</h5>
+            <p className="text-xs text-text-gray font-mono">Spots & Campañas</p>
+          </div>
+        </div>
+        <div className="bg-white/5 p-6 rounded border border-white/5 flex items-center gap-4 hover:border-brand-red/50 transition-colors">
+          <CinematicIcon icon={Share2} />
+          <div>
+            <h5 className="text-white font-bold">Edición Centralizada</h5>
+            <p className="text-xs text-text-gray font-mono">Post-producción & Color</p>
           </div>
         </div>
       </div>
@@ -286,44 +423,101 @@ const QueHacemos = () => {
 };
 
 const ComoTrabajamos = () => {
-  const points = [
-    "Dirección creativa clara",
-    "Producción integral cuando el proyecto lo requiere",
-    "Equipos y recursos adecuados a cada escala",
-    "Procesos simples y controlados",
-    "Edición consistente bajo un mismo criterio",
+  const steps = [
+    {
+      phase: "01. PRE-PRODUCCIÓN",
+      title: "Dirección Creativa Definida",
+      desc: "Guion, Scouting, Casting & Moodboard",
+      icon: Aperture
+    },
+    {
+      phase: "02. RODAJE / SHOOTING",
+      title: "Producción Técnica Integral",
+      desc: "Cámaras Cinema Line, Iluminación & Sonido",
+      icon: Video
+    },
+    {
+      phase: "03. POST-PRODUCCIÓN",
+      title: "Edición & Color Grading",
+      desc: "Montaje, Diseño Sonoro & Entrega Final",
+      icon: Layers
+    },
   ];
 
   return (
-    <Section id="como-trabajamos" className="bg-neutral-900/20">
-      <div className="border-t border-border-dark pt-8 mb-12">
+    <Section id="como-trabajamos" className="bg-neutral-900/40 relative overflow-hidden">
+      {/* Background Grid Accent */}
+      <div className="absolute inset-0 bg-neutral-900/50 pointer-events-none" />
+
+      <div className="border-t border-border-dark pt-8 mb-16 flex items-center justify-between relative z-10">
         <h3 className="text-sm font-mono text-text-gray">
           02 / CÓMO TRABAJAMOS
         </h3>
+        <div className="hidden md:flex gap-2 font-mono text-xs text-brand-red">
+          <span>REC ●</span> <span className="text-white">00:14:23:10</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <ul className="space-y-6">
-          {points.map((point, idx) => (
-            <li
-              key={idx}
-              className="flex items-start gap-4 text-lg md:text-xl text-white"
-            >
-              <Check className="w-6 h-6 text-brand-red mt-1 shrink-0" />
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+        {/* Timeline Visualization */}
+        <div className="space-y-0 relative">
+          <div className="absolute left-[27px] top-6 bottom-6 w-[2px] bg-white/10" />
 
-        <div className="p-8 md:p-12 border border-border-dark bg-white/5">
-          <p className="text-2xl md:text-3xl font-mono text-center">
-            <span className="block text-text-gray mb-2">
-              Menos improvisación.
-            </span>
-            <span className="block text-brand-red font-bold">
-              Más control y resultado.
-            </span>
-          </p>
+          {steps.map((step, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.2 }}
+              className="relative flex gap-8 pb-12 last:pb-0 group"
+            >
+              <div className="relative z-10 p-3 bg-black border border-white/20 rounded-full group-hover:border-brand-red group-hover:bg-brand-red/10 transition-colors duration-300">
+                <step.icon className="w-6 h-6 text-white group-hover:text-brand-red transition-colors" />
+              </div>
+              <div className="pt-2">
+                <span className="text-xs font-mono text-brand-red tracking-widest mb-1 block">{step.phase}</span>
+                <h4 className="text-2xl font-bold text-white mb-2">{step.title}</h4>
+                <p className="text-text-gray font-light">{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Live Monitor Preview */}
+        <div className="relative">
+          <div className="absolute -top-12 -right-12 text-white/5 pointer-events-none">
+            {/* Icon Removed */}
+          </div>
+
+          <MonitorFrame label="LIVE VIEW">
+            <div className="aspect-video bg-neutral-900 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden group">
+              {/* Animated Scanline */}
+              <div className="absolute inset-0 bg-linear-to-b from-transparent via-brand-red/5 to-transparent h-4 animate-scan opacity-50" />
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center opacity-20 mix-blend-screen" />
+
+              <div className="relative z-10 border border-brand-red/30 p-8 backdrop-blur-sm bg-black/40">
+                <div className="flex items-center gap-2 justify-center mb-4 text-brand-red">
+                  <Grid3x3 className="w-4 h-4 animate-spin-slow" />
+                  <span className="font-mono text-xs tracking-widest">SYSTEM CHECK: OK</span>
+                </div>
+                <p className="text-3xl md:text-5xl font-black uppercase text-white mb-2 tracking-tighter">
+                  CONTROL<br />TOTAL
+                </p>
+                <p className="font-mono text-white/50 text-xs">NO IMPROVISATION ALLOWED</p>
+              </div>
+
+              {/* Monitor Data Overlay */}
+              <div className="absolute bottom-4 left-4 text-[10px] font-mono text-brand-red space-y-1 text-left">
+                <p>ISO: 800</p>
+                <p>WB: 5600K</p>
+                <p>SHUTTER: 180°</p>
+              </div>
+              <div className="absolute bottom-4 right-4 text-[10px] font-mono text-white/50 space-y-1 text-right">
+                <p>BAT: 84%</p>
+                <p>MEM: 1TB</p>
+              </div>
+            </div>
+          </MonitorFrame>
         </div>
       </div>
     </Section>
@@ -387,40 +581,69 @@ const NuestrosSistemas = () => {
 };
 
 const Diferencial = () => {
-  const points = [
-    "Operación liviana, sin estructura inflada",
-    "Alto criterio estético y narrativo",
-    "Capacidad real de producción integral",
-    "Resolución bajo presión",
-    "Edición centralizada y consistente",
+  const specs = [
+    { label: "ESTRUCTURA", value: "LIVIANA / ÁGIL", icon: Video },
+    { label: "CRITERIO", value: "CINEMATOGRÁFICO", icon: Film },
+    { label: "CAPACIDAD", value: "FULL INTEGRAL", icon: Grid3x3 },
+    { label: "RESOLUCIÓN", value: "BAJO PRESIÓN", icon: Aperture },
+    { label: "WORKFLOW", value: "CENTRALIZADO", icon: Layers },
   ];
 
   return (
     <Section id="diferencial" className="bg-neutral-900/20">
-      <div className="border-t border-border-dark pt-8 mb-12">
+      <div className="border-t border-border-dark pt-8 mb-12 flex justify-between items-end">
         <h3 className="text-sm font-mono text-text-gray">
           04 / DIFERENCIAL FOTOCICLETA
         </h3>
+        <div className="hidden md:block font-mono text-xs text-white/30 border border-white/20 px-2 py-1 rounded">
+          SPEC_SHEET_V2.0
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <ul className="space-y-6">
-          {points.map((point, idx) => (
-            <li
-              key={idx}
-              className="flex items-start gap-4 text-xl text-white"
-            >
-              <div className="w-2 h-2 bg-brand-red mt-2.5 shrink-0" />
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* Spec Sheet List */}
+        <div className="lg:col-span-7 bg-black/40 border border-white/10 rounded-lg overflow-hidden backdrop-blur-sm">
+          <div className="bg-white/5 border-b border-white/5 p-4 flex justify-between items-center">
+            <span className="font-mono text-xs text-brand-red font-bold">TECHNICAL SPECIFICATIONS</span>
+          </div>
+          <div className="divide-y divide-white/5">
+            {specs.map((spec, idx) => (
+              <div key={idx} className="p-6 flex items-center justify-between group hover:bg-white/5 transition-colors">
+                <div className="flex items-center gap-4">
+                  <spec.icon className="w-5 h-5 text-text-gray group-hover:text-brand-red transition-colors" />
+                  <span className="font-mono text-sm text-text-gray tracking-widest">{spec.label}</span>
+                </div>
+                <span className="text-lg md:text-xl font-bold text-white tracking-tight">{spec.value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="p-4 bg-brand-red/5 border-t border-brand-red/10 text-center">
+            <p className="text-xs font-mono text-brand-red">All systems optimized for high performance.</p>
+          </div>
+        </div>
 
-        <div className="p-12 border-l-4 border-brand-red bg-white/5">
-          <blockquote className="text-4xl md:text-5xl font-serif italic text-white leading-tight">
-            "No prometemos magia. <br />
-            <span className="text-brand-red">Ejecutamos bien.</span>"
-          </blockquote>
+        {/* Quote Block - Sensor Style */}
+        <div className="lg:col-span-5 relative">
+          <div className="aspect-[4/3] bg-neutral-900 rounded-lg border border-white/10 relative overflow-hidden flex flex-col justify-center items-center p-8 text-center group">
+            {/* Sensor Grid Pattern */}
+            <div className="absolute inset-0 bg-neutral-900" />
+
+            <Focus className="w-16 h-16 text-brand-red mb-6 opacity-80 group-hover:scale-110 transition-transform duration-500" />
+
+            <blockquote className="relative z-10 text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-b from-white to-white/60 leading-tight mb-4">
+              "No prometemos magia."
+            </blockquote>
+            <div className="h-px w-12 bg-brand-red mb-4" />
+            <p className="relative z-10 text-xl text-white font-mono tracking-wider">
+              EJECUTAMOS <span className="text-brand-red font-bold">BIEN</span>.
+            </p>
+
+            {/* Corner Marks */}
+            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/20" />
+            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/20" />
+            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/20" />
+            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-white/20" />
+          </div>
         </div>
       </div>
     </Section>
