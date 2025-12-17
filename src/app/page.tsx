@@ -514,6 +514,95 @@ const GalleryItem = ({
   );
 };
 
+const GalleryVideoItem = ({
+  item,
+  onClick,
+}: {
+  item: {
+    size: "large" | "tall" | "normal" | "wide";
+    type: "photo" | "video";
+    category: string;
+    title: string;
+    image: string;
+    videoUrl?: string;
+  };
+  onClick: () => void;
+}) => {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const isLocalVideo = item.videoUrl && (item.videoUrl.startsWith('/') || item.videoUrl.startsWith('./'));
+
+  const sizeClasses = {
+    large: "md:col-span-2 md:row-span-2 min-h-[400px]",
+    tall: "md:col-span-1 md:row-span-2 min-h-[400px]",
+    wide: "md:col-span-2 md:row-span-1 min-h-[200px]",
+    normal: "md:col-span-1 md:row-span-1 min-h-[200px]",
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ scale: 0.98 }}
+      className={`relative group overflow-hidden bg-neutral-900 cursor-pointer ${sizeClasses[item.size]}`}
+      onMouseEnter={() => {
+        if (item.type === "video" && isLocalVideo && videoRef.current) {
+          videoRef.current.play();
+        }
+      }}
+      onMouseLeave={() => {
+        if (item.type === "video" && isLocalVideo && videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
+      }}
+      onClick={onClick}
+    >
+      {/* Background - Image or Video */}
+      {item.type === "video" && isLocalVideo ? (
+        <video
+          ref={videoRef}
+          src={item.videoUrl}
+          className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+          muted
+          loop
+          playsInline
+        />
+      ) : (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+          style={{ backgroundImage: `url(${item.image})` }}
+        />
+      )}
+
+      {/* Overlay Gradient */}
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60" />
+
+      {/* Content */}
+      <div className="absolute inset-0 p-6 flex flex-col justify-end">
+        <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <span className="text-brand-red text-xs font-mono uppercase tracking-wider mb-2 block">
+            {item.type === "video" && <Play className="inline w-3 h-3 mr-1 mb-0.5" />}
+            {item.category}
+          </span>
+          <h3 className="text-white text-xl md:text-2xl font-bold leading-none">{item.title}</h3>
+        </div>
+      </div>
+
+      {/* Play Button Overlay for Video */}
+      {item.type === "video" && (
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-16 h-16 rounded-full bg-brand-red/80 backdrop-blur-sm flex items-center justify-center text-white">
+            <Play className="w-6 h-6 ml-1 fill-white" />
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
 const VideoModal = ({
   isOpen,
   onClose,
@@ -609,7 +698,7 @@ const PremiumGallery = () => {
       category: "AUDIOVISUAL",
       title: "URBAN MOVEMENT 24",
       image: "https://images.unsplash.com/photo-1534068590799-09895a701e3e?q=80&w=2000&auto=format&fit=crop",
-      videoUrl: "/videos/sample-video-1.mp4" // Example local video
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" // YouTube embed
     },
     {
       size: "tall" as const,
@@ -631,7 +720,7 @@ const PremiumGallery = () => {
       category: "AUDIOVISUAL",
       title: "TECH SYSTEMS",
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop",
-      videoUrl: "/videos/sample-video-2.mp4" // Example local video
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" // YouTube embed
     },
     {
       size: "wide" as const,
@@ -639,7 +728,7 @@ const PremiumGallery = () => {
       category: "DOCUMENTAL",
       title: "ROOTS OF CULTURE",
       image: "https://images.unsplash.com/photo-1533575770077-052fa2c609fc?q=80&w=2000&auto=format&fit=crop",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" // Example external video
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" // YouTube embed
     },
     {
       size: "large" as const,
@@ -683,83 +772,17 @@ const PremiumGallery = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-max"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, idx) => {
-              const videoRef = React.useRef<HTMLVideoElement>(null);
-              const isLocalVideo = item.videoUrl && (item.videoUrl.startsWith('/') || item.videoUrl.startsWith('./'));
-
-              return (
-                <motion.div
-                  key={`${item.title}-${idx}`}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.4 }}
-                  whileHover={{ scale: 0.98 }}
-                  className={`relative group overflow-hidden bg-neutral-900 cursor-pointer ${item.size === "large" ? "md:col-span-2 md:row-span-2 min-h-[400px]" :
-                      item.size === "tall" ? "md:col-span-1 md:row-span-2 min-h-[400px]" :
-                        item.size === "wide" ? "md:col-span-2 md:row-span-1 min-h-[200px]" :
-                          "md:col-span-1 md:row-span-1 min-h-[200px]"
-                    }`}
-                  onMouseEnter={() => {
-                    if (item.type === "video" && isLocalVideo && videoRef.current) {
-                      videoRef.current.play();
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (item.type === "video" && isLocalVideo && videoRef.current) {
-                      videoRef.current.pause();
-                      videoRef.current.currentTime = 0;
-                    }
-                  }}
-                  onClick={() => {
-                    if (item.type === "video" && item.videoUrl) {
-                      openVideoModal(item.videoUrl, item.title);
-                    }
-                  }}
-                >
-                  {/* Background - Image or Video */}
-                  {item.type === "video" && isLocalVideo ? (
-                    <video
-                      ref={videoRef}
-                      src={item.videoUrl}
-                      className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
-                      muted
-                      loop
-                      playsInline
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
-                      style={{ backgroundImage: `url(${item.image})` }}
-                    />
-                  )}
-
-                  {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60" />
-
-                  {/* Content */}
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <span className="text-brand-red text-xs font-mono uppercase tracking-wider mb-2 block">
-                        {item.type === "video" && <Play className="inline w-3 h-3 mr-1 mb-0.5" />}
-                        {item.category}
-                      </span>
-                      <h3 className="text-white text-xl md:text-2xl font-bold leading-none">{item.title}</h3>
-                    </div>
-                  </div>
-
-                  {/* Play Button Overlay for Video */}
-                  {item.type === "video" && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-16 h-16 rounded-full bg-brand-red/80 backdrop-blur-sm flex items-center justify-center text-white">
-                        <Play className="w-6 h-6 ml-1 fill-white" />
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+            {filteredItems.map((item, idx) => (
+              <GalleryVideoItem
+                key={`${item.title}-${idx}`}
+                item={item}
+                onClick={() => {
+                  if (item.type === "video" && item.videoUrl) {
+                    openVideoModal(item.videoUrl, item.title);
+                  }
+                }}
+              />
+            ))}
           </AnimatePresence>
         </motion.div>
 
