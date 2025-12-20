@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { motion, AnimatePresence, useInView, useMotionValue, useTransform, useScroll } from "framer-motion";
 import {
   Camera,
   Clapperboard,
@@ -35,7 +36,12 @@ import {
   Cpu,
   Zap,
   Scan,
-  Database
+  Database,
+  Instagram,
+  Facebook,
+  Move3d,
+  View,
+  Calendar,
 } from "lucide-react";
 import {
   FilmGrain,
@@ -46,19 +52,29 @@ import {
   ProductionBadge,
   CinematicIcon
 } from "@/components/VisualEffects";
+import { ContactForm } from "@/components/ContactForm";
 
 // --- Components ---
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -84,19 +100,27 @@ const Navbar = () => {
       <FilmGrain />
       <Vignette />
 
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 pointer-events-none">
+      <div className={`fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none transition-all duration-300 ${isMobile ? 'pt-2' : 'pt-6'}`}>
         <motion.nav
-          initial={{ width: "70%", y: 0 }}
+          initial={{ width: "95%", y: 0 }}
           animate={{
-            width: isScrolled ? "65%" : "70%",
-            y: isScrolled ? 0 : 0, // Keep it at same top offset or adjust if needed
-            padding: isScrolled ? "0.75rem 1.5rem" : "1rem 2rem",
+            width: isMobile ? "80%" : (isScrolled ? "65%" : "70%"),
+            y: 0,
+            padding: isMobile ? "0.5rem 1rem" : (isScrolled ? "0.75rem 1.5rem" : "1rem 2rem"),
           }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
           className="pointer-events-auto flex items-center justify-between backdrop-blur-xl bg-neutral-900/60 border border-white/10 shadow-2xl rounded-full"
         >
           <div className="font-bold text-lg tracking-tight text-white cursor-pointer z-50 flex items-center gap-2" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            FOTOCICLETA <span className="text-brand-red text-[10px] bg-white/10 px-1.5 py-0.5 rounded border border-white/5 hidden md:inline-block">PRO</span>
+            <div className="relative w-40 h-14">
+              <Image
+                src="/LOGOCICLETACHECK.png"
+                alt="FOTOCICLETA"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
 
           {/* Desktop Menu */}
@@ -115,7 +139,9 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center gap-4">
             <a
-              href="mailto:hola@fotocicleta.com"
+              href="https://wa.me/595981136144"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`text-xs font-bold text-white bg-brand-red hover:bg-red-700 transition-all duration-300 rounded-full flex items-center gap-2 ${isScrolled ? 'px-4 py-2' : 'px-6 py-2.5'}`}
             >
               <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
@@ -157,7 +183,7 @@ const Navbar = () => {
             ))}
 
             <a
-              href="mailto:hola@fotocicleta.com"
+              href="mailto:ralphie@fotocicleta.com"
               className="mt-8 px-8 py-3 text-lg font-medium text-white border border-brand-red bg-brand-red/10 rounded-full hover:bg-brand-red transition-colors"
             >
               Hablemos
@@ -210,6 +236,17 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
       {/* Cinematic Background Elements */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-30 pointer-events-none">
+        <div className="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px]">
+          <Image
+            src="/biciLogo.png"
+            alt="FOTOCICLETA"
+            fill
+            className="object-contain opacity-50 grayscale mix-blend-overlay"
+            priority
+          />
+        </div>
+      </div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-neutral-950/80 to-neutral-950 -z-10" />
 
       <div className="space-y-8 z-10 max-w-4xl relative">
@@ -219,9 +256,9 @@ const Hero = () => {
           transition={{ delay: 0.5 }}
           className="absolute -top-20 left-1/2 -translate-x-1/2 flex gap-4 opacity-30 select-none"
         >
-          <ProductionBadge type="RAW" />
-          <ProductionBadge type="4K" />
-          <ProductionBadge type="FPS" />
+          <div className="border border-white/50 px-2 py-1 text-[10px] font-mono tracking-widest text-white">CALIDAD</div>
+          <div className="border border-white/50 px-2 py-1 text-[10px] font-mono tracking-widest text-white">DETALLE</div>
+          <div className="border border-white/50 px-2 py-1 text-[10px] font-mono tracking-widest text-white">ACCIÓN</div>
         </motion.div>
 
         <motion.div
@@ -235,8 +272,8 @@ const Hero = () => {
             <span className="w-12 h-px bg-brand-red/50" />
           </h2>
           <h1 className="text-5xl md:text-8xl font-bold tracking-tighter text-white mb-6 leading-none">
-            VISUAL <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">STORYTELLING</span>
+            NARRATIVA <br />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">VISUAL</span>
           </h1>
         </motion.div>
 
@@ -272,7 +309,7 @@ const Hero = () => {
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-[10px] font-mono text-white/30 tracking-widest">SCROLL</span>
+        <span className="text-[10px] font-mono text-white/30 tracking-widest">DESLIZAR</span>
         <div className="w-px h-12 bg-linear-to-b from-brand-red to-transparent" />
       </motion.div>
     </section>
@@ -280,23 +317,51 @@ const Hero = () => {
 };
 
 const Manifiesto = () => {
+  const containerRef = React.useRef(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.2 });
+
+  React.useEffect(() => {
+    if (videoRef.current) {
+      if (isInView) {
+        videoRef.current.play().catch(e => console.log("Play error:", e));
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isInView]);
+
   return (
-    <Section className="min-h-[70vh] flex items-center justify-center relative overflow-hidden bg-black text-white py-24">
+    <Section className="min-h-[50vh] md:min-h-[70vh] flex items-center justify-center relative overflow-hidden bg-black text-white py-14 md:py-24">
       {/* Film Strip Border Top */}
-      <div className="absolute top-0 left-0 right-0 h-12 md:h-16 bg-neutral-900 flex items-center justify-between px-2 z-20 border-b border-white/10">
+      <div className="absolute top-0 left-0 right-0 h-10 md:h-16 bg-neutral-900 flex items-center justify-between px-2 z-20 border-b border-white/10">
         {Array.from({ length: 40 }).map((_, i) => (
-          <div key={`top-${i}`} className="w-3 md:w-6 h-8 md:h-10 bg-black rounded-sm shrink-0 mx-1 md:mx-4" />
+          <div key={`top-${i}`} className="w-2 md:w-6 h-6 md:h-10 bg-black rounded-sm shrink-0 mx-1 md:mx-4" />
         ))}
       </div>
 
-      {/* Ambient Lighting */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-red/5 blur-[100px] rounded-full pointer-events-none" />
+      {/* Background Video */}
+      <div ref={containerRef} className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-black/60 z-10" /> {/* Dimming Overlay */}
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover opacity-80"
+        >
+          <source src="/DEMO%20REEL%20FOTOCICLETA.mp4" type="video/mp4" />
+        </video>
+      </div>
 
-      <div className="max-w-4xl w-full relative z-10 p-8 md:p-12">
+      {/* Ambient Lighting */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-red/5 blur-[100px] rounded-full pointer-events-none z-10" />
+
+      <div className="max-w-4xl w-full relative z-10 p-4 md:p-12">
         {/* Scene Heading */}
         <div className="font-mono text-sm tracking-[0.2em] text-white/40 mb-12 flex items-center gap-4">
           <span className="w-12 h-px bg-white/20" />
-          INT. CREATIVE STUDIO - DAY
+          INT. ESTUDIO CREATIVO - DÍA
         </div>
 
         <div className="space-y-12">
@@ -419,6 +484,130 @@ const QueHacemos = () => {
         </div>
       </div>
     </Section>
+  );
+};
+
+const RealEstatePromo = () => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.5, 1], [50, 0, -50]);
+
+  return (
+    <>
+      <section ref={containerRef} className="relative py-32 flex flex-col items-center justify-center overflow-hidden">
+
+        {/* Cinematic Header - Floating above */}
+        <motion.div
+          style={{ opacity, y: textY }}
+          className="relative z-20 text-center mb-12 mix-blend-difference"
+        >
+          <h2 className="text-4xl md:text-8xl font-bold text-white tracking-tighter mb-4">
+            INMOBILIARIA
+          </h2>
+          <p className="text-sm md:text-base font-mono text-white/70 tracking-[0.5em] uppercase">
+            TOUR VIRTUAL 360º
+          </p>
+        </motion.div>
+
+        {/* Main Cinema Scope Container */}
+        <motion.div
+          style={{ scale, opacity }}
+          className="relative w-full max-w-[90%] md:max-w-7xl aspect-video md:aspect-[2.39/1] group"
+        >
+          {/* Ambilight Glow Effect - Behind */}
+          <div className="absolute inset-0 bg-brand-red/20 blur-[100px] scale-110 opacity-50 group-hover:opacity-80 transition-opacity duration-1000" />
+
+          {/* Video Container */}
+          <div className="relative w-full h-full rounded-none overflow-hidden shadow-2xl ring-1 ring-white/10">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[2s] ease-out"
+            >
+              <source src="/DEMO%20REEL%20FOTOCICLETA.mp4" type="video/mp4" />
+            </video>
+
+            {/* Cinematic Vignette */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] pointer-events-none" />
+
+            {/* Minimalist Controls / Overlay */}
+            <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/40 backdrop-blur-[2px]">
+              <button
+                onClick={() => setIsOpen(true)}
+                className="group/btn relative flex items-center gap-4 px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-none hover:bg-white hover:text-black transition-all duration-300"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span className="font-mono text-xs tracking-widest font-bold">VER DEMO 360º</span>
+              </button>
+
+              <a
+                href="https://wa.me/595981136144"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/btn relative flex items-center gap-4 px-8 py-4 bg-brand-red backdrop-blur-md border border-brand-red rounded-none hover:bg-red-700 hover:border-red-700 transition-all duration-300 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.6)]"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="font-mono text-xs tracking-widest font-bold text-white">RESERVAR AHORA</span>
+              </a>
+            </div>
+
+            {/* Bottom Info Minimal */}
+            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 flex flex-col items-start gap-1 opacity-100 group-hover:opacity-0 transition-opacity duration-500">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-brand-red rounded-none animate-pulse" />
+                <span className="text-[10px] font-mono text-white/80 tracking-widest">EN VIVO</span>
+              </div>
+              <span className="text-xs md:text-sm font-bold text-white tracking-wider">RECORRIDOS VIRTUALES</span>
+            </div>
+
+          </div>
+        </motion.div>
+
+      </section>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-12"
+          >
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-7xl aspect-video rounded-none overflow-hidden shadow-2xl ring-1 ring-white/10"
+            >
+              <video
+                autoPlay
+                controls
+                className="w-full h-full object-contain"
+              >
+                <source src="/DEMO%20REEL%20FOTOCICLETA.mp4" type="video/mp4" />
+              </video>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -1111,7 +1300,7 @@ const FAQ = () => {
             <p className="text-text-gray text-sm">
               Si tenés una consulta específica que no está acá, escribinos directamente.
             </p>
-            <a href="mailto:hola@fotocicleta.com" className="inline-block mt-8 text-sm font-mono text-white border-b border-brand-red hover:text-brand-red transition-colors pb-1">
+            <a href="mailto:ralphie@fotocicleta.com" className="inline-block mt-8 text-sm font-mono text-white border-b border-brand-red hover:text-brand-red transition-colors pb-1">
               CONSULTAR AHORA
             </a>
           </div>
@@ -1137,27 +1326,95 @@ const Footer = () => {
   return (
     <footer id="contacto" className="py-24 px-6 border-t border-border-dark">
       <div className="max-w-7xl mx-auto text-center space-y-12">
+        <div className="flex justify-center mb-8">
+          <div className="relative w-72 h-36">
+            <Image
+              src="/LOGOCICLETACHECK.png"
+              alt="FOTOCICLETA"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
         <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tighter">
           ¿Tenés una campaña o <br className="hidden md:block" /> necesitás un
           sistema?
         </h2>
 
-        <a
-          href="mailto:hola@fotocicleta.com"
-          className="inline-block px-12 py-6 bg-brand-red text-white text-xl font-bold rounded hover:bg-brand-red-hover transition-all transform hover:scale-105"
-        >
-          HABLEMOS / CONTACTO
-        </a>
+        <div className="w-full flex justify-center">
+          <ContactForm />
+        </div>
 
-        <div className="pt-24 flex flex-col md:flex-row justify-between items-center text-sm font-mono text-text-gray/40 gap-4">
-          <p>© 2024 FOTOCICLETA</p>
-          <a
-            href="mailto:hola@fotocicleta.com"
-            className="hover:text-white transition-colors"
-          >
-            hola@fotocicleta.com
-          </a>
-          <p>BUENOS AIRES, ARG</p>
+        {/* Footer info - Redesigned */}
+        <div className="pt-24 border-t border-white/5 mt-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-left">
+
+            {/* Brand Column */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-mono tracking-[0.2em] text-brand-red">MARCA</h4>
+              <div className="space-y-2">
+                <p className="text-sm text-white font-bold">FOTOCICLETA</p>
+                <p className="text-xs text-text-gray">Productora Visual Integral</p>
+                <p className="text-xs text-white/30 font-mono mt-4">© 2024 TODOS LOS DERECHOS RESERVADOS</p>
+              </div>
+            </div>
+
+            {/* Socials Column */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-mono tracking-[0.2em] text-brand-red">REDES</h4>
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://www.instagram.com/fotocicletapy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-text-gray hover:text-white transition-colors flex items-center gap-2 group"
+                >
+                  <Instagram className="w-4 h-4 text-white/50 group-hover:text-brand-red transition-colors" />
+                  <span>@fotocicletapy</span>
+                </a>
+                <a
+                  href="https://www.facebook.com/profile.php?id=100063744878888"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-text-gray hover:text-white transition-colors flex items-center gap-2 group"
+                >
+                  <Facebook className="w-4 h-4 text-white/50 group-hover:text-brand-red transition-colors" />
+                  <span>Página de Facebook</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Contact Column */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-mono tracking-[0.2em] text-brand-red">CONTACTO</h4>
+              <div className="flex flex-col gap-2">
+                <a
+                  href="mailto:ralphie@fotocicleta.com"
+                  className="text-sm text-text-gray hover:text-white transition-colors"
+                >
+                  ralphie@fotocicleta.com
+                </a>
+                <a
+                  href="https://wa.me/595981136144"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-text-gray hover:text-white transition-colors"
+                >
+                  +595 981 136144
+                </a>
+              </div>
+            </div>
+
+            {/* Location Column */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-mono tracking-[0.2em] text-brand-red">ESTUDIO</h4>
+              <div className="space-y-2">
+                <p className="text-sm text-text-gray">Asunción, Paraguay</p>
+                <p className="text-xs text-white/30 font-mono">DISPONIBLE EN TODO EL MUNDO</p>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </footer>
@@ -1171,6 +1428,7 @@ export default function Home() {
       <Hero />
       <Manifiesto />
       <QueHacemos />
+      <RealEstatePromo />
       <PremiumGallery />
       <ComoTrabajamos />
       <NuestrosSistemas />
