@@ -114,7 +114,7 @@ const Navbar = () => {
           <div className="font-bold text-lg tracking-tight text-white cursor-pointer z-50 flex items-center gap-2" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
             <div className="relative w-40 h-14">
               <Image
-                src="/LOGOCICLETACHECK.png"
+                src="/logoFotocicleta.png"
                 alt="FOTOCICLETA"
                 fill
                 className="object-contain"
@@ -273,7 +273,7 @@ const Hero = () => {
           </h2>
           <h1 className="text-5xl md:text-8xl font-bold tracking-tighter text-white mb-6 leading-none">
             NARRATIVA <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">VISUAL</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">FOTOCICLETA</span>
           </h1>
         </motion.div>
 
@@ -489,11 +489,28 @@ const QueHacemos = () => {
 
 const RealEstatePromo = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
+
+  // Detect when section is in viewport
+  const isInView = useInView(containerRef, { amount: 0.5 });
+
+  // Auto-play/pause based on scroll visibility
+  React.useEffect(() => {
+    if (videoRef.current) {
+      if (isInView) {
+        videoRef.current.play().catch(() => {
+          // Handle autoplay restrictions
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isInView]);
 
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
@@ -527,7 +544,7 @@ const RealEstatePromo = () => {
           {/* Video Container */}
           <div className="relative w-full h-full rounded-none overflow-hidden shadow-2xl ring-1 ring-white/10">
             <video
-              autoPlay
+              ref={videoRef}
               loop
               muted
               playsInline
@@ -539,8 +556,8 @@ const RealEstatePromo = () => {
             {/* Cinematic Vignette */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] pointer-events-none" />
 
-            {/* Minimalist Controls / Overlay */}
-            <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/40 backdrop-blur-[2px]">
+            {/* Minimalist Controls / Overlay - Only VER DEMO on hover */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/40 backdrop-blur-[2px]">
               <button
                 onClick={() => setIsOpen(true)}
                 className="group/btn relative flex items-center gap-4 px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-none hover:bg-white hover:text-black transition-all duration-300"
@@ -548,16 +565,6 @@ const RealEstatePromo = () => {
                 <Play className="w-4 h-4 fill-current" />
                 <span className="font-mono text-xs tracking-widest font-bold">VER DEMO 360º</span>
               </button>
-
-              <a
-                href="https://wa.me/595981136144"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/btn relative flex items-center gap-4 px-8 py-4 bg-brand-red backdrop-blur-md border border-brand-red rounded-none hover:bg-red-700 hover:border-red-700 transition-all duration-300 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.6)]"
-              >
-                <Calendar className="w-4 h-4" />
-                <span className="font-mono text-xs tracking-widest font-bold text-white">RESERVAR AHORA</span>
-              </a>
             </div>
 
             {/* Bottom Info Minimal */}
@@ -572,6 +579,22 @@ const RealEstatePromo = () => {
           </div>
         </motion.div>
 
+        {/* Premium CTA - Outside Video, Always Visible */}
+        <motion.div
+          style={{ opacity }}
+          className="mt-12 flex justify-center"
+        >
+          <a
+            href="https://wa.me/595981136144"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/cta relative flex items-center gap-4 px-12 py-6 bg-brand-red backdrop-blur-md border-2 border-brand-red rounded-none hover:bg-red-700 hover:border-red-700 transition-all duration-300 shadow-[0_0_40px_rgba(220,38,38,0.4)] hover:shadow-[0_0_80px_rgba(220,38,38,0.8)] hover:scale-105"
+          >
+            <Calendar className="w-5 h-5 text-white" />
+            <span className="font-mono text-sm tracking-widest font-bold text-white">RESERVAR AHORA</span>
+            <ArrowRight className="w-5 h-5 text-white group-hover/cta:translate-x-1 transition-transform" />
+          </a>
+        </motion.div>
       </section>
 
       {/* Video Modal */}
@@ -745,24 +768,24 @@ const NuestrosSistemas = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SystemCard
-          title="Contenido Continuo Mensual"
-          sub="Presencia constante, coherencia visual"
-          desc="Sistema de producción mensual para marcas que necesitan presencia constante, coherencia visual y continuidad. Incluye producción, edición y planificación bajo un criterio definido."
-        />
-        <SystemCard
-          title="Producción Documental"
-          sub="Profundidad, relato y archivo"
-          desc="Proyectos narrativos y documentales para marcas, instituciones y propuestas culturales que requieren profundidad, relato y archivo visual."
-        />
-        <SystemCard
           title="Producción Publicitaria Integral"
           sub="Control total del resultado"
-          desc="Campañas publicitarias completas: preproducción, producción y postproducción bajo una misma dirección. Asumimos la producción general, coordinación de equipos y decisiones creativas."
+          desc="Campañas completas: preproducción, producción y postproducción."
         />
         <SystemCard
-          title="Producción Express"
-          sub="Acciones puntuales"
-          desc="Acciones puntuales, lanzamientos y eventos con alcance y tiempos definidos. Producción ágil, edición eficiente y entregables claros."
+          title="Contenido Continuo (Mensual)"
+          sub="Presencia constante"
+          desc="Sistemas de producción mensual para redes, web y comunicación constante."
+        />
+        <SystemCard
+          title="Producción Documental / Storytelling"
+          sub="Profundidad y relato"
+          desc="Proyectos narrativos para marcas, instituciones y cultura."
+        />
+        <SystemCard
+          title="Producción Express / Acciones Puntuales"
+          sub="Agilidad de respuesta"
+          desc="Lanzamientos, eventos y acciones de corto plazo."
         />
       </div>
     </Section>
@@ -1426,12 +1449,12 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-brand-red selection:text-white">
       <Navbar />
       <Hero />
-      <Manifiesto />
-      <QueHacemos />
-      <RealEstatePromo />
       <PremiumGallery />
-      <ComoTrabajamos />
+      <RealEstatePromo />
+      <Manifiesto />
       <NuestrosSistemas />
+      <ComoTrabajamos />
+      <QueHacemos />
       <Diferencial />
       <ParaQuienes />
       <FAQ />
