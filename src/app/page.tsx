@@ -112,7 +112,7 @@ const Navbar = () => {
           className="pointer-events-auto flex items-center justify-between backdrop-blur-xl bg-neutral-900/60 border border-white/10 shadow-2xl rounded-full"
         >
           <div className="font-bold text-lg tracking-tight text-white cursor-pointer z-50 flex items-center gap-2" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <div className="relative w-40 h-14">
+            <div className="relative w-28 h-10 md:w-40 md:h-14">
               <Image
                 src="/logoFotocicleta.png"
                 alt="FOTOCICLETA"
@@ -1182,8 +1182,8 @@ const PremiumGallery = () => {
   return (
     <>
       <Section id="galeria" className="bg-black/30">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-white/5 pb-8">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 gap-6 border-b border-white/5 pb-8">
+          <div className="text-center md:text-left">
             <h3 className="text-sm font-mono text-text-gray mb-2">PRODUCCIONES RECIENTES</h3>
             <h2 className="text-3xl md:text-5xl font-bold text-white">Galería Visual</h2>
           </div>
